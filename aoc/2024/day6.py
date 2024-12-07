@@ -24,13 +24,6 @@ def step(grid, x, y):
       yield x, y, dir
 
 
-def part1(file):
-  with open(file) as input:
-    grid = [list(line.rstrip()) for line in input]
-    x, y = find_guard(grid)
-    return len(set((x, y) for x, y, dir in step(grid, x, y)))
-
-
 def has_loop(grid, x, y):
   s = step(grid, x, y)
   paths = set()
@@ -41,6 +34,13 @@ def has_loop(grid, x, y):
     if result in paths:
       return True
     paths.add(result)
+
+
+def part1(file):
+  with open(file) as input:
+    grid = [list(line.rstrip()) for line in input]
+    x, y = find_guard(grid)
+    return len(set((x, y) for x, y, dir in step(grid, x, y)))
 
 
 def part2(file):
@@ -55,6 +55,7 @@ def part2(file):
       if has_loop(grid, x, y): obsticales += 1
       grid[j][i] = '.'
     return obsticales
+
 
 print("Part 1:", part1(sys.argv[1]))
 print("Part 1:", part2(sys.argv[1]))

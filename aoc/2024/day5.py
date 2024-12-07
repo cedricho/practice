@@ -22,13 +22,6 @@ def obey(update, rules):
   return True
 
 
-def part1(file):
-  rules, updates = readData(file)
-  correct_updates = [u for u in updates if obey(u, rules)]
-  return sum(int(u[len(u)//2]) for u in correct_updates)
-
-
-
 def fix_order(update, rules):
   visited = set()
   order = []
@@ -44,8 +37,13 @@ def fix_order(update, rules):
   for node in update:
     if node not in visited:
       topological_sort(rules, node)
-
   return list(reversed(order))
+
+
+def part1(file):
+  rules, updates = readData(file)
+  correct_updates = [u for u in updates if obey(u, rules)]
+  return sum(int(u[len(u)//2]) for u in correct_updates)
 
 
 def part2(file):
