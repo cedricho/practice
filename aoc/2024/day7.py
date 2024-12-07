@@ -1,3 +1,4 @@
+import re
 import sys
 
 
@@ -18,18 +19,21 @@ def eval2(res, a, sum, i):
   return eval2(res, a, plus, i + 1) or eval2(res, a, mul, i + 1) or eval2(res, a, cat, i + 1)
 
 
+def get_data(line):
+  res, *factors = map(int, re.split(r': | ', line))
+  return (res, factors)
+
+
 def part1(file):
   with open(file) as input:
-    lines = [line.split(':') for line in input]
-    lines = [(int(res), list(map(int, a.split()))) for res, a in lines]
-    return sum(res for res, a in lines if eval1(res, a, a[0], 1))
+    data = [get_data(line) for line in input]
+    return sum(res for res, a in data if eval1(res, a, a[0], 1))
 
 
 def part2(file):
   with open(file) as input:
-    lines = [line.split(':') for line in input]
-    lines = [(int(res), list(map(int, a.split()))) for res, a in lines]
-    return sum(res for res, a in lines if eval2(res, a, a[0], 1))
+    data = [get_data(line) for line in input]
+    return sum(res for res, a in data if eval2(res, a, a[0], 1))
 
 
 print(part1(sys.argv[1]))
