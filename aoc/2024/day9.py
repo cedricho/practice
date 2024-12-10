@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import itertools
 import sys
 
 
@@ -21,57 +20,11 @@ def expand(compact):
 
 def defrag(disk):
   s = 0; e = len(disk) - 1
-  while True:
-    while s < e and disk[s] != -1: s += 1
-    while s < e and disk[e] == -1: e -= 1
-    if s >= e: break
+  while s < e:
+    if disk[s] != -1: s += 1; continue
+    if disk[e] == -1: e -= 1; continue
     disk[s] = disk[e]; disk[e] = -1
   return disk
-
-
-@dataclass
-class Block:
-  file_id: int
-  start: int
-  size: int
-
-
-def get_block_list(compact):
-  blocks = []
-  is_file = True
-  start = 0
-  file_id = 0
-  for size in compact:
-    if is_file: blocks.append(Block(file_id, start, size)); file_id += 1; start += size
-    else: blocks.append(Block(-1, start, size)); start += size
-    is_file = not is_file
-  return blocks
-
-
-def defrag_blocks(blocks):
-  e = len(blocks) - 1
-  while True:
-    while 0 <= e and blocks[e].file_id == -1: e -= 1
-    if 0 > e: break
-    s = 0
-    while s < e and (blocks[s].file_id != -1 or blocks[s].size < blocks[e].size): s += 1
-    if s >= e: e -=1; continue
-    gap = blocks[s].size - blocks[e].size
-    gap_start = blocks[s].start + blocks[e].size
-    blocks[s].file_id = blocks[e].file_id
-    blocks[s].size = blocks[e].size
-    blocks[e].file_id = -1
-    if gap > 0:
-      blocks = blocks[0:s+1] + [Block(-1, gap_start, gap)] + blocks[s+1:]
-      e += 1
-  return blocks
-
-
-def expand_blocks(defraged):
-  expanded = []
-  for b in defraged:
-    expanded.extend([b.file_id]*b.size)
-  return expanded
 
 
 def part1(file):
@@ -81,12 +34,32 @@ def part1(file):
   return sum(i * v for i, v in enumerate(defraged) if v >= 0)
 
 
+def find_file_block(disk, id):
+  return (disk.index(id), disk.count(id))
+
+
+def find_free_block(disk, l, end):
+  for s in range(end):
+    if disk[s] != -1: continue
+    if all(d == -1 for d in disk[s:s+l]): return s
+  return -1
+
+
+def defrag2(disk):
+  file_id = max(disk)
+  for id in range(file_id, -1, -1):
+    fs, fl = find_file_block(disk, id)
+    if (s := find_free_block(disk, fl, fs)) < 0: continue
+    disk[s:s+fl] = [id] * fl
+    disk[fs:fs+fl] = [-1] * fl
+  return disk
+
+
 def part2(file):
   compact = read(file)
-  blocks = get_block_list(compact)
-  defraged = defrag_blocks(blocks)
-  expanded = list(itertools.chain(*[[b.file_id]*b.size for b in defraged]))
-  return sum(i * v for i, v in enumerate(expanded) if v >= 0)
+  expanded = expand(compact)
+  defraged = defrag2(expanded)
+  return sum(i * v for i, v in enumerate(defraged) if v >= 0)
 
 
 print("Part 1", part1(sys.argv[1]))
