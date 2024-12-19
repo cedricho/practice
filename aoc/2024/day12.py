@@ -44,7 +44,7 @@ def bfs(grid, visited, x, y):
   visited[y, x] = True
   plants.append((x, y))
   while q:
-    x, y = q.pop()
+    x, y = q.popLeft()
     for nx, ny in [(x + dx, y + dy) for dx, dy, _ in directions]:
       if in_range(grid, nx, ny) and grid[y, x] == grid[ny, nx] and not visited[ny, nx]:
         q.append((nx, ny))

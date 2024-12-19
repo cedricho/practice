@@ -12,7 +12,7 @@ def calc_path(grid, sx, sy, allowDup = False):
   q = deque()
   q.append((sx, sy))
   while q:
-    x, y = q.pop()
+    x, y = q.popLeft()
     if grid[y, x] == 9: peak.append((x, y)); continue
     candidates = [(x + dx, y + dy) for dx, dy in [(-1,0), (1,0), (0,-1), (0,1)]]
     for cx, cy in candidates:
