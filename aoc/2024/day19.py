@@ -27,5 +27,5 @@ with open(sys.argv[1]) as f:
   towels = f.readline().rstrip().split(', ')
   f.readline()
   designs = [line.rstrip() for line in f]
-  print("Part 1", len([1 for design in designs if possible(design, 0)]))
-  print("Part 2", sum([count_possible(design) for design in designs]))
+  print("Part 1", sum(1 for design in designs if possible(design, 0)))
+  print("Part 2", sum(count_possible(design) for design in designs))
