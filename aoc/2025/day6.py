@@ -18,38 +18,31 @@ def sum_results(nums_and_ops):
 def read_part1(file):
   with open(file) as input:
     lines = [line.strip() for line in input]
-    ops = lines[-1].split()
-    lines = lines[:-1]
-    nums = np.zeros((len(lines), len(ops)), dtype=int)
-    for i in range(len(lines)):
-      nums[i] = [int(v) for v in lines[i].split()]
+    line_items = [line.split() for line in lines]
     result = []
-    for i in range(len(ops)):
-      result.append((nums[:, i], ops[i]))
+    for i in range(len(line_items[0])):
+      op = line_items[-1][i]
+      nums = [int(line_item[i]) for line_item in line_items[:-1]]
+      result.append((nums, op))
     return result
 
 
 def read_part2(file):
-  with open(file) as input:
-    lines = [line.rstrip('\n') for line in input]
-    ops = lines[-1].split()
-    lines = lines[:-1]
-    raw = np.empty((len(lines), len(lines[0])), dtype=str)
-    for i in range(len(lines)):
-      raw[i] = list(lines[i])
-
-    result = []
-    ops_idx = 0
-    nums = []
-    for i in range(raw.shape[1]):
-      if n := ''.join(raw[:, i]).strip():
-        nums.append(int(n))
-      else:
-        result.append((nums, ops[ops_idx]))
-        ops_idx += 1
+  data = np.genfromtxt(file, dtype=str, delimiter=1)
+  result = []
+  nums = []
+  op = ''
+  for i in range(data.shape[1]):
+    if data[-1, i] in ('+', '*'):
+      if nums:
+        result.append((nums, op))
         nums = []
-    result.append((nums, ops[ops_idx]))
-    return result
+      op = data[-1, i]
+    if n := ''.join(data[:-1, i]).strip():
+      nums.append(int(n))
+  if nums:
+    result.append((nums, op))
+  return result
 
 
 print("Part 1:", sum_results(read_part1(sys.argv[1])))
